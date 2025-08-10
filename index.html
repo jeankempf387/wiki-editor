@@ -30,6 +30,23 @@
       background-color: #0056b3;
     }
   </style>
+
+  <script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      macros: {
+        "\\RR": "\\mathbb{R}",
+        "\\bold": "\\mathbf"
+      }
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+  };
+  </script>
+
 </head>
 <body>
   <h1>Éditeur Markdown avec MathJax</h1>
@@ -38,7 +55,6 @@
 
   <button id="downloadBtn">Télécharger le Markdown</button>
 
-  <!-- MathJax 3 -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
   <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
@@ -47,26 +63,22 @@
     const editor = new toastui.Editor({
       el: document.querySelector('#editor'),
       height: '600px',
-      initialEditType: 'split',  // texte + preview côte à côte
+      initialEditType: 'split',
       previewStyle: 'vertical',
       useCommandShortcut: true,
-      // autre option importante pour que preview se mette à jour avec MathJax
       hooks: {
         addImageBlobHook: (blob, callback) => {
-          // Pas d'upload d'image pour l'instant
           return false;
         }
       }
     });
 
-    // Actualiser MathJax dans la preview à chaque changement
     editor.on('change', () => {
       if (window.MathJax) {
         window.MathJax.typesetPromise();
       }
     });
 
-    // Bouton téléchargement Markdown
     document.getElementById('downloadBtn').addEventListener('click', () => {
       const markdown = editor.getMarkdown();
       const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
