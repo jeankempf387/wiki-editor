@@ -3,12 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Éditeur Markdown Toast UI + KaTeX</title>
+<title>Éditeur Markdown Toast UI simple</title>
 
 <!-- CSS Toast UI Editor -->
 <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
-<!-- CSS KaTeX -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css" />
 
 <style>
   body {
@@ -22,69 +20,25 @@
     border: 1px solid #ccc;
     border-radius: 4px;
   }
-  button {
-    margin-top: 15px;
-    padding: 10px 15px;
-    font-size: 16px;
-    cursor: pointer;
-    background-color: #007bff;
-    border: none;
-    color: white;
-    border-radius: 4px;
-  }
-  button:hover {
-    background-color: #0056b3;
-  }
-  /* Amélioration KaTeX dans preview */
-  .toastui-editor-contents .katex {
-    font-size: 1.1em;
-  }
 </style>
 </head>
 <body>
 
-<h1>Éditeur Markdown Toast UI + KaTeX</h1>
+<h1>Éditeur Markdown Toast UI simple</h1>
 
 <div id="editor"></div>
 
-<button id="downloadBtn">Télécharger le Markdown</button>
-
-<!-- Librairies JS -->
-<script src="https://cdn.jsdelivr.net/npm/markdown-it@13.0.1/dist/markdown-it.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/markdown-it-katex@3.0.0/dist/markdown-it-katex.min.js"></script>
+<!-- Librairie Toast UI Editor -->
 <script src="https://cdn.jsdelivr.net/npm/@toast-ui/editor@latest/toastui-editor-all.min.js"></script>
 
 <script>
-  // Configuration de markdown-it avec KaTeX
-  const md = window.markdownit({
-    html: true,
-    linkify: true,
-    typographer: true
-  }).use(window.markdownitKatex);
-
-  // Initialisation de Toast UI Editor en mode markdown avec preview vertical
+  // Init Toast UI Editor simple markdown + preview
   const editor = new toastui.Editor({
     el: document.querySelector('#editor'),
     height: '600px',
     initialEditType: 'markdown',
     previewStyle: 'vertical',
     useCommandShortcut: true,
-    markdownit: md,
-  });
-
-  // Bouton téléchargement Markdown
-  document.getElementById('downloadBtn').addEventListener('click', () => {
-    const markdown = editor.getMarkdown();
-    const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'article.md';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
   });
 </script>
 
