@@ -2,52 +2,87 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>TipTap avec Math (KaTeX)</title>
+  <title>Toast UI Editor avec KaTeX</title>
 
+  <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css" />
+
   <style>
-    body { max-width: 700px; margin: 40px auto; font-family: Arial, sans-serif; }
-    #editor { border: 1px solid #ccc; padding: 10px; min-height: 150px; border-radius: 5px; }
-    .ProseMirror { outline: none; }
+    body {
+      max-width: 900px;
+      margin: 30px auto;
+      font-family: Arial, sans-serif;
+      padding: 15px;
+    }
+    #editor {
+      height: 600px;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 15px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #007bff;
+      border: none;
+      color: white;
+      border-radius: 4px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    /* Custom KaTeX styling in preview */
+    .toastui-editor-contents .katex {
+      font-size: 1.1em;
+    }
   </style>
 </head>
 <body>
 
-<h1>TipTap éditeur avec math (KaTeX)</h1>
+<h1>Toast UI Editor avec KaTeX (math inline et block)</h1>
 
 <div id="editor"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tiptap/core@2.0.0-beta.82/dist/tiptap.umd.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tiptap/starter-kit@2.0.0-beta.22/dist/tiptap-starter-kit.umd.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tiptap/extension-math@2.0.0-beta.24/dist/tiptap-extension-math.umd.js"></script>
+<button id="downloadBtn">Télécharger le Markdown</button>
+
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/markdown-it@13.0.1/dist/markdown-it.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@toast-ui/editor@latest/toastui-editor-all.min.js"></script>
 
 <script>
-  const { Editor } = window['@tiptap/core']
-  const StarterKit = window['@tiptap/starter-kit'].default
-  const MathExtension = window['@tiptap/extension-math'].default
+  // Markdown-it avec plugin KaTeX pour math inline/block
+  const md = window.markdownit({
+    html: true,
+    linkify: true,
+    typographer: true
+  }).use(window.markdownitKatex);
 
-  const editor = new Editor({
-    element: document.querySelector('#editor'),
-    extensions: [
-      StarterKit,
-      MathExtension.configure({
-        inlineRenderer: (latex) => {
-          return window.katex.renderToString(latex, { throwOnError: false })
-        },
-        blockRenderer: (latex) => {
-          return window.katex.renderToString(latex, { throwOnError: false, displayMode: true })
-        },
-      }),
-    ],
-    content: `
-      <p>Voici une formule inline : <math-inline>E=mc^2</math-inline></p>
-      <p>Et une formule en bloc :</p>
-      <math-display>\\int_a^b f(x) dx = F(b) - F(a)</math-display>
-    `
-  })
+  const editor = new toastui.Editor({
+    el: document.querySelector('#editor'),
+    height: '600px',
+    initialEditType: 'split',
+    previewStyle: 'vertical',
+    useCommandShortcut: true,
+    markdownit: md,
+  });
+
+  // Bouton téléchargement markdown
+  document.getElementById('downloadBtn').addEventListener('click', () => {
+    const markdown = editor.getMarkdown();
+    const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'article.md';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/markdown-it-katex@3.0.0/dist/markdown-it-katex.min.js"></script>
 
 </body>
 </html>
+
