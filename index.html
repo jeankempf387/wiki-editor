@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Éditeur Markdown avec MathJax</title>
+  <title>Éditeur Markdown avec MathJax (inline & block)</title>
 
   <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
 
@@ -34,22 +34,19 @@
   <script>
   window.MathJax = {
     tex: {
-      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      inlineMath: [['\\(', '\\)'], ['$', '$']],
       displayMath: [['$$', '$$'], ['\\[', '\\]']],
-      macros: {
-        "\\RR": "\\mathbb{R}",
-        "\\bold": "\\mathbf"
-      }
+      processEscapes: true
     },
     options: {
       skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
     }
   };
   </script>
-
+  
 </head>
 <body>
-  <h1>Éditeur Markdown avec MathJax</h1>
+  <h1>Éditeur Markdown avec MathJax (inline & block)</h1>
 
   <div id="editor"></div>
 
@@ -73,12 +70,14 @@
       }
     });
 
+    // Actualiser MathJax dans la preview à chaque modification
     editor.on('change', () => {
       if (window.MathJax) {
         window.MathJax.typesetPromise();
       }
     });
 
+    // Bouton téléchargement Markdown
     document.getElementById('downloadBtn').addEventListener('click', () => {
       const markdown = editor.getMarkdown();
       const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
@@ -88,10 +87,4 @@
       a.href = url;
       a.download = 'article.md';
       document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    });
-  </script>
-</body>
-</html>
+      a.click()
