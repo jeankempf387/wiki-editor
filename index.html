@@ -49,20 +49,20 @@
 
 <button id="downloadBtn">Télécharger le Markdown</button>
 
-<!-- Librairies -->
+<!-- Librairies JS -->
 <script src="https://cdn.jsdelivr.net/npm/markdown-it@13.0.1/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-katex@3.0.0/dist/markdown-it-katex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@toast-ui/editor@latest/toastui-editor-all.min.js"></script>
 
 <script>
-  // Configuration de markdown-it avec KaTeX pour le rendu mathématique
+  // Configuration de markdown-it avec KaTeX
   const md = window.markdownit({
     html: true,
     linkify: true,
     typographer: true
   }).use(window.markdownitKatex);
 
-  // Initialisation de Toast UI Editor en mode Markdown + preview
+  // Initialisation de Toast UI Editor en mode markdown avec preview vertical
   const editor = new toastui.Editor({
     el: document.querySelector('#editor'),
     height: '600px',
@@ -72,6 +72,21 @@
     markdownit: md,
   });
 
-  // Bouton pour télécharger le contenu Markdown
+  // Bouton téléchargement Markdown
   document.getElementById('downloadBtn').addEventListener('click', () => {
-    const markdown = editor.get
+    const markdown = editor.getMarkdown();
+    const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'article.md';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+</script>
+
+</body>
+</html>
