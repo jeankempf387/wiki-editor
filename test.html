@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ToastUI Editor + KaTeX (auto-render)</title>
+
+<!-- Toast UI Editor CSS -->
+<link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
+
+<!-- KaTeX CSS (nécessaire pour l'affichage) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+
+<style>
+  body {
+    max-width: 900px;
+    margin: 30px auto;
+    font-family: Arial, sans-serif;
+    padding: 15px;
+  }
+  #editor {
+    height: 600px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  button {
+    margin-top: 15px;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    border-radius: 4px;
+  }
+  button:hover { background-color: #0056b3; }
+  /* un petit réglage pour que les formules aient une taille lisible */
+  .toastui-editor-contents .katex { font-size: 1.05em; }
+</style>
+</head>
+<body>
+
+<h1>Éditeur Markdown Toast UI</h1>
+
+<div id="editor"></div>
+
+<button id="downloadBtn">Télécharger le Markdown</button>
+
+<!-- Toast UI Editor JS -->
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+
+<!-- KaTeX + auto-render (auto-render vient après katex) -->
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+<script>
+  // --- Initialisation Toast UI (strictement comme ton code de base) ---
+  const editor = new toastui.Editor({
+    el: document.querySelector('#editor'),
+    height: '600px',
+    initialEditType: 'markdown',
+    previewStyle: 'vertical',
+    useCommandShortcut: true
+  });
+
+  // --- Fonction d'application KaTeX sur la preview ---
+  // On cherche la zone rendu HTML de la preview (sélecteur robuste)
+  function findPreviewElement() {
+    // Toast UI place le HTML rendu dans des éléments avec ces classes ; on cible l'un d'eux sous #editor
+    return document.querySelector('#editor .toastui-editor-contents')
+        || document.querySelector('#editor .toastui-editor-md-preview')
+        || document.querySelector('#editor .toastui-editor-preview')
+        || document.querySelector('.toastui-editor-contents');
+  }
+
+  // Débounce simple pour ne pas spammer
+  let katexTimeout = null;
+  function renderKaTeXInPreview() {
+    const preview = findPreviewElement();
+    if (!preview || typeof renderMathInElement !== 'function') return;
+    // clear previous timeout and schedule render
+    clearTimeout(katexTimeout);
+    katexTimeout = setTimeout(() => {
+      try {
+        renderMathInElement(preview, {
+          // délimiteurs : d'abord les blocks, puis inline
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '\\[', right: '\\]', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false}
+          ],
+          // ne pas lever d'erreur si syntaxe invalide
+          throwOnError: false,
+          // ignore certains éléments si nécessaire (par défaut)
+          // ignoredTags: ["script","noscript","style","textarea","pre","code"]
+        });
+      } catch (err) {
+        // sécurité : on ne veut pas casser l'éditeur si KaTeX plante
+        console.warn('KaTeX render error:', err);
+      }
+    }, 120); // délai court pour laisser Toast UI finir le rendu
+  }
+
+  // Appeler au démarrage (après petit délai pour que preview existe)
+  setTimeout(renderKaTeXInPreview, 200);
+
+  // Écouter les changements dans l'éditeur pour relancer le rendu KaTeX
+  // 'change' est le bon event pour Toast UI (se déclenche quand le markdown change)
+  editor.on('change', () => {
+    renderKaTeXInPreview();
+  });
+
+  // Aussi, si tu switches manuellement le style de preview (optionnel), on peut relancer
+  // (échappatoire si l'API expose un event spécifique ; ici on relève périodiquement)
+  // setInterval(renderKaTeXInPreview, 2000); // [optionnel - pas activé]
+
+  // --- Bouton téléchargement Markdown (exactement comme avant) ---
+  document.getElementById('downloadBtn').addEventListener('click', () => {
+    const markdown = editor.getMarkdown();
+    const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'article.md';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+</script>
+
+</body>
+</html>
+
