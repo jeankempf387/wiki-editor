@@ -4,66 +4,64 @@
   <meta charset="UTF-8" />
   <title>Éditeur Markdown avec MathJax</title>
 
-  <!-- Toast UI Editor CSS -->
   <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
 
-  <!-- MathJax CSS (via CDN, utile pour certains styles) -->
   <style>
-    /* optionnel : style MathJax dans l'aperçu */
-    .toastui-editor-contents .katex {
-      font-size: 1.1em;
-      line-height: 1.2;
+    body {
+      max-width: 900px;
+      margin: 30px auto;
+      font-family: Arial, sans-serif;
+      padding: 15px;
+    }
+    #editor {
+      height: 600px;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 15px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #007bff;
+      border: none;
+      color: white;
+      border-radius: 4px;
+    }
+    button:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
   <h1>Éditeur Markdown avec MathJax</h1>
 
-  <div id="editor" style="height: 500px;"></div>
+  <div id="editor"></div>
 
-  <button id="downloadBtn" style="margin-top:15px; padding:10px 15px; font-size:16px; cursor:pointer; background:#007bff; border:none; color:#fff; border-radius:4px;">
-    Télécharger le Markdown
-  </button>
+  <button id="downloadBtn">Télécharger le Markdown</button>
 
-  <!-- MathJax Script -->
+  <!-- MathJax 3 -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
-  <!-- Toast UI Editor JS -->
   <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 
   <script>
-    // Initialisation de l'éditeur avec support des maths activé
     const editor = new toastui.Editor({
       el: document.querySelector('#editor'),
-      height: '500px',
-      initialEditType: 'wysiwyg',
+      height: '600px',
+      initialEditType: 'split',  // texte + preview côte à côte
       previewStyle: 'vertical',
       useCommandShortcut: true,
-      extendedAutolinks: true,
-      customHTMLRenderer: {
-        codeBlock(node, { entering, origin }) {
-          if (entering) {
-            // recharger MathJax dans les blocs de code
-            setTimeout(() => {
-              if(window.MathJax) {
-                window.MathJax.typesetPromise();
-              }
-            }, 0);
-          }
-          return origin();
-        }
-      },
+      // autre option importante pour que preview se mette à jour avec MathJax
       hooks: {
         addImageBlobHook: (blob, callback) => {
-          // Pas d'upload ici, mais tu peux gérer l'upload d'images si besoin
+          // Pas d'upload d'image pour l'instant
           return false;
         }
       }
     });
 
-    // Actualiser le rendu MathJax à chaque changement
+    // Actualiser MathJax dans la preview à chaque changement
     editor.on('change', () => {
-      if(window.MathJax) {
+      if (window.MathJax) {
         window.MathJax.typesetPromise();
       }
     });
