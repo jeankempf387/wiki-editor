@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Toast UI Editor avec KaTeX</title>
+  <title>Éditeur Markdown Toast UI avec KaTeX</title>
 
   <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css" />
@@ -30,7 +30,7 @@
     button:hover {
       background-color: #0056b3;
     }
-    /* Custom KaTeX styling in preview */
+    /* Style KaTeX dans preview */
     .toastui-editor-contents .katex {
       font-size: 1.1em;
     }
@@ -38,7 +38,7 @@
 </head>
 <body>
 
-<h1>Toast UI Editor avec KaTeX (math inline et block)</h1>
+<h1>Éditeur Markdown Toast UI avec KaTeX (math inline & block)</h1>
 
 <div id="editor"></div>
 
@@ -46,16 +46,18 @@
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it@13.0.1/dist/markdown-it.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/markdown-it-katex@3.0.0/dist/markdown-it-katex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@toast-ui/editor@latest/toastui-editor-all.min.js"></script>
 
 <script>
-  // Markdown-it avec plugin KaTeX pour math inline/block
+  // Config markdown-it avec plugin katex
   const md = window.markdownit({
     html: true,
     linkify: true,
     typographer: true
   }).use(window.markdownitKatex);
 
+  // Init Toast UI Editor avec markdown-it modifié
   const editor = new toastui.Editor({
     el: document.querySelector('#editor'),
     height: '600px',
@@ -81,8 +83,5 @@
   });
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/markdown-it-katex@3.0.0/dist/markdown-it-katex.min.js"></script>
-
 </body>
 </html>
-
